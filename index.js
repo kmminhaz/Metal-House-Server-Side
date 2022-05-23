@@ -24,10 +24,14 @@ async function run() {
   try {
     // Connect the client to the server
     await client.connect();
-    // const toolCollection = client.db("metalwork").collection("tools");
+    const toolCollection = client.db("metalwork").collection("tools");
 
-    await client.db("tools").command({ ping: 1 });
-    console.log("Connected successfully to server");
+    app.get('/tools', async(req, res) => {
+        const query = {};
+        const cursor = toolCollection.find(query);
+        const tool = await cursor.toArray();
+        res.send(tool);
+    })
   } finally {
     // await client.close();
   }
