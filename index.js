@@ -13,7 +13,7 @@ app.get("/", (req, res) => {
 });
 
 // Database Connection
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.xlwxjjl.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
@@ -26,12 +26,18 @@ async function run() {
     await client.connect();
     const toolCollection = client.db("metalHouse").collection("tools");
 
-    app.get('/tools', async(req, res) => {
-        const query = {};
-        const cursor = toolCollection.find(query);
-        const tool = await cursor.toArray();
-        res.send(tool);
-    })
+    app.get("/tools", async (req, res) => {
+      const query = {};
+      const cursor = toolCollection.find(query);
+      const tool = await cursor.toArray();
+      res.send(tool);
+    });
+    app.get("/tools/:id", async (req, res) => {
+      const toolId = req.params.id;
+      const query = { _id: ObjectId(toolId) };
+      const tool = await toolCollection.findOne(query);
+      res.send(tool);
+    });
   } finally {
     // await client.close();
   }
