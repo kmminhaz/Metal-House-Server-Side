@@ -25,6 +25,7 @@ async function run() {
     // Connect the client to the server
     await client.connect();
     const toolCollection = client.db("metalHouse").collection("tools");
+    const orderCollection = client.db("metalHouse").collection("orders");
 
     app.get("/tools", async (req, res) => {
       const query = {};
@@ -32,11 +33,18 @@ async function run() {
       const tool = await cursor.toArray();
       res.send(tool);
     });
+    
     app.get("/tools/:id", async (req, res) => {
       const toolId = req.params.id;
       const query = { _id: ObjectId(toolId) };
       const tool = await toolCollection.findOne(query);
       res.send(tool);
+    });
+    
+    app.post("/orders", async (req, res) => {
+      const placeOrder = req.body;
+      const theOrder = await orderCollection.insertOne(placeOrder);
+      res.send(theOrder);
     });
   } finally {
     // await client.close();
