@@ -24,7 +24,7 @@ async function run() {
   try {
     // Connect the client to the server
     await client.connect();
-    const toolCollection = client.db("metalwork").collection("tools");
+    const toolCollection = client.db("metalHouse").collection("tools");
 
     app.get('/tools', async(req, res) => {
         const query = {};
