@@ -63,6 +63,13 @@ async function run() {
       const result = await orderCollection.deleteOne(query);
       res.send(result);
     });
+    
+    app.get("/myOrders/:id", async (req, res) => {
+      const myOrderId = req.params.id;
+      const query = { _id: ObjectId(myOrderId) };
+      const myOrder = await orderCollection.findOne(query);
+      res.send(myOrder);
+    });
   } finally {
     // await client.close();
   }
