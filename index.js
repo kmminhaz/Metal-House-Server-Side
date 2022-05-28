@@ -78,10 +78,9 @@ async function run() {
 
     app.post("/create-payment-intent", async (req, res) => {
       const product = req.body;
-      const {orderPayable} = product;
-      // const payable = product.orderPayable;
-      const payableAmount = orderPayable * 100;
-      console.log(product, payable, payableAmount);
+      const payable = product.orderPayable;
+      const payableAmount = payable * 100;
+      // console.log(product, payable, payableAmount);
       const paymentIntent = await stripe.paymentIntents.create({
         amount: payableAmount,
         currency: "usd",
@@ -97,12 +96,48 @@ async function run() {
       res.send(review)
     })
     
-    app.get("/myProfile", async(req, res) => {
-      const query = {};
-      const cursor = profileCollection.find(query);
-      const profile = await cursor.toArray();
-      res.send(profile);
-    })
+    app.get("/myProfile/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const myProfile = await profileCollection.findOne(query);
+      res.send(myProfile);
+    });
+    
+    app.put("/myProfile/:email", async (req, res) => {
+      const myEmail = req.params.email;
+      const myUpdatedProfile = req.body;
+      const query = { email: myEmail };
+      const options = { upsert: true };
+      const updatedName = myUpdatedProfile.name;
+      const updatedEmail = myUpdatedProfile.email;
+      const updatedEducation = myUpdatedProfile.education;
+      const updatedLocation = myUpdatedProfile.location;
+      const updatedPhone = myUpdatedProfile.phoneNumber;
+      const updatedLinkedIn = myUpdatedProfile.linkedInProfile;
+      const updateDoc = {
+        $set: {
+          name: updatedName,
+          email: updatedEmail,
+          education: updatedEducation,
+          location: updatedLocation,
+          phoneNumber: updatedPhone,
+          linkedInProfile: updatedLinkedIn,
+        },
+      };
+
+      const result = await profileCollection.updateOne(
+        query,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+
+    app.post("/tools", async (req, res) => {
+      const theTool = req.body;
+      const tool = await toolCollection.insertOne(theTool);
+      res.send(tool);
+    });
   } finally {
     // await client.close();
   }
