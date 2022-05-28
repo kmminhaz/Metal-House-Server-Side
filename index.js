@@ -172,6 +172,33 @@ async function run() {
       const result = await orderCollection.updateOne(query, updateDoc, options);
       res.send(result);
     });
+
+    app.get("/profiles", async (req, res) => {
+      const query = {};
+      const cursor = profileCollection.find(query);
+      const profiles = await cursor.toArray();
+      res.send(profiles);
+    });
+
+    app.put("/makeAdmin/:id", async (req, res) => {
+      const id = req.params.id;
+      const accessLevel = req.body;
+      const query = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const newAccessLevel = accessLevel.access;
+      const updateDoc = {
+        $set: {
+          access: newAccessLevel,
+        },
+      };
+
+      const result = await profileCollection.updateOne(
+        query,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
   } finally {
     // await client.close();
   }
