@@ -122,24 +122,11 @@ async function run() {
     
     app.put("/myProfile/:email", async (req, res) => {
       const myEmail = req.params.email;
-      const myUpdatedProfile = req.body;
+      const currentProfile = req.body;
       const query = { email: myEmail };
       const options = { upsert: true };
-      const updatedName = myUpdatedProfile.name;
-      const updatedEmail = myUpdatedProfile.email;
-      const updatedEducation = myUpdatedProfile.education;
-      const updatedLocation = myUpdatedProfile.location;
-      const updatedPhone = myUpdatedProfile.phoneNumber;
-      const updatedLinkedIn = myUpdatedProfile.linkedInProfile;
       const updateDoc = {
-        $set: {
-          name: updatedName,
-          email: updatedEmail,
-          education: updatedEducation,
-          location: updatedLocation,
-          phoneNumber: updatedPhone,
-          linkedInProfile: updatedLinkedIn,
-        },
+        $set: currentProfile,
       };
 
       const result = await profileCollection.updateOne(
@@ -170,6 +157,21 @@ async function run() {
       res.send(orders);
     });
 
+    app.put("/shippedOrder/:id", async (req, res) => {
+      const id = req.params.id;
+      const status = req.body;
+      const query = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const newOrderStatus = status.orderStatus;
+      const updateDoc = {
+        $set: {
+          orderStatus: newOrderStatus,
+        },
+      };
+
+      const result = await orderCollection.updateOne(query, updateDoc, options);
+      res.send(result);
+    });
   } finally {
     // await client.close();
   }
