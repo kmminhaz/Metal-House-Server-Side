@@ -78,14 +78,14 @@ async function run() {
       const product = req.body;
       const payable = product.orderPayable;
       const payableAmount = payable * 100;
-
+      console.log(product, payable, payableAmount);
       const paymentIntent = await stripe.paymentIntents.create({
         amount: payableAmount,
         currency: "usd",
         payment_method_types: ["card"],
       });
 
-      res.send({clientSecret: paymentIntent.client_secret,});
+      res.send({ clientSecret: paymentIntent.client_secret });
     });
   } finally {
     // await client.close();
