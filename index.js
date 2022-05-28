@@ -30,6 +30,7 @@ async function run() {
     const toolCollection = client.db("metalHouse").collection("tools");
     const orderCollection = client.db("metalHouse").collection("orders");
     const reviewCollection = client.db("metalHouse").collection("reviews");
+    const profileCollection = client.db("metalHouse").collection("profiles");
 
     app.get("/tools", async (req, res) => {
       const query = {};
@@ -94,6 +95,13 @@ async function run() {
       const theReview = req.body;
       const review = await reviewCollection.insertOne(theReview);
       res.send(review)
+    })
+    
+    app.get("/myProfile", async(req, res) => {
+      const query = {};
+      const cursor = profileCollection.find(query);
+      const profile = await cursor.toArray();
+      res.send(profile);
     })
   } finally {
     // await client.close();
