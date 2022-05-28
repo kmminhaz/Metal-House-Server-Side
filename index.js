@@ -90,6 +90,23 @@ async function run() {
       res.send({ clientSecret: paymentIntent.client_secret });
     });
 
+    app.put("/order/:id", async (req, res) => {
+      const id = req.params.id;
+      const myTransection = req.body;
+      const query = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const myTransectionId = myTransection.transectionId;
+      const updateDoc = {
+        $set: {
+          orderStatus: "pending",
+          transactionId: myTransectionId,
+        },
+      };
+
+      const result = await orderCollection.updateOne(query, updateDoc, options);
+      res.send(result);
+    });
+
     app.post("/myReview", async(req, res) => {
       const theReview = req.body;
       const review = await reviewCollection.insertOne(theReview);
@@ -145,6 +162,8 @@ async function run() {
       const result = await toolCollection.deleteOne(query);
       res.send(result);
     });
+    
+
   } finally {
     // await client.close();
   }
