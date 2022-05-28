@@ -1,8 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const port = process.env.PORT || 5000;
+
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
 const app = express();
+const port = process.env.PORT || 5000;
 
 // middleware
 app.use(cors());
@@ -33,23 +36,23 @@ async function run() {
       const tool = await cursor.toArray();
       res.send(tool);
     });
-    
+
     app.get("/tools/:id", async (req, res) => {
       const toolId = req.params.id;
       const query = { _id: ObjectId(toolId) };
       const tool = await toolCollection.findOne(query);
       res.send(tool);
     });
-    
+
     app.post("/orders", async (req, res) => {
       const placeOrder = req.body;
       const theOrder = await orderCollection.insertOne(placeOrder);
       res.send(theOrder);
     });
-    
+
     app.get("/myOrders", async (req, res) => {
       const email = req.query.userEmail;
-      if(email){
+      if (email) {
         const query = { userEmail: email };
         const cursor = orderCollection.find(query);
         const products = await cursor.toArray();
@@ -63,12 +66,26 @@ async function run() {
       const result = await orderCollection.deleteOne(query);
       res.send(result);
     });
-    
+
     app.get("/myOrders/:id", async (req, res) => {
       const myOrderId = req.params.id;
       const query = { _id: ObjectId(myOrderId) };
       const myOrder = await orderCollection.findOne(query);
       res.send(myOrder);
+    });
+
+    app.post("/create-payment-intent", async (req, res) => {
+      const product = req.body;
+      const payable = product.orderPayable;
+      const payableAmount = payable * 100;
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: payableAmount,
+        currency: "usd",
+        payment_method_types: ["card"],
+      });
+
+      res.send({clientSecret: paymentIntent.client_secret,});
     });
   } finally {
     // await client.close();
