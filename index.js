@@ -29,6 +29,7 @@ async function run() {
     await client.connect();
     const toolCollection = client.db("metalHouse").collection("tools");
     const orderCollection = client.db("metalHouse").collection("orders");
+    const reviewCollection = client.db("metalHouse").collection("reviews");
 
     app.get("/tools", async (req, res) => {
       const query = {};
@@ -76,8 +77,9 @@ async function run() {
 
     app.post("/create-payment-intent", async (req, res) => {
       const product = req.body;
-      const payable = product.orderPayable;
-      const payableAmount = payable * 100;
+      const {orderPayable} = product;
+      // const payable = product.orderPayable;
+      const payableAmount = orderPayable * 100;
       console.log(product, payable, payableAmount);
       const paymentIntent = await stripe.paymentIntents.create({
         amount: payableAmount,
@@ -87,6 +89,12 @@ async function run() {
 
       res.send({ clientSecret: paymentIntent.client_secret });
     });
+
+    app.post("/myReview", async(req, res) => {
+      const theReview = req.body;
+      const review = await reviewCollection.insertOne(theReview);
+      res.send(review)
+    })
   } finally {
     // await client.close();
   }
