@@ -75,8 +75,7 @@ async function run() {
     });
 
     app.post("/create-payment-intent", async (req, res) => {
-      const {product} = req.body;
-      console.log(product);
+      const product = req.body;
       const payable = product.orderPayable;
       const payableAmount = payable * 100;
 
