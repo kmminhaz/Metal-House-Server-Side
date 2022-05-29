@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -107,19 +108,41 @@ async function run() {
       res.send(result);
     });
 
-    app.post("/myReview", async(req, res) => {
+    app.post("/myReview", async (req, res) => {
       const theReview = req.body;
       const review = await reviewCollection.insertOne(theReview);
-      res.send(review)
-    })
-    
+      res.send(review);
+    });
+
     app.get("/myProfile/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email: email };
       const myProfile = await profileCollection.findOne(query);
       res.send(myProfile);
     });
-    
+
+    app.put("/profile/:email", async (req, res) => {
+      const myEmail = req.params.email;
+      const currentProfile = req.body;
+      const query = { email: myEmail };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: currentProfile,
+      };
+
+      const result = await profileCollection.updateOne(
+        query,
+        updateDoc,
+        options
+      );
+      const token = jwt.sign(
+        { email: myEmail },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "1h" }
+      );
+      res.send({ result, token });
+    });
+
     app.put("/myProfile/:email", async (req, res) => {
       const myEmail = req.params.email;
       const currentProfile = req.body;
@@ -142,14 +165,14 @@ async function run() {
       const tool = await toolCollection.insertOne(theTool);
       res.send(tool);
     });
-    
+
     app.delete("/tool/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await toolCollection.deleteOne(query);
       res.send(result);
     });
-    
+
     app.get("/orders", async (req, res) => {
       const query = {};
       const cursor = orderCollection.find(query);
