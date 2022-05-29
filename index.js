@@ -214,5 +214,5 @@ async function run() {
 run().catch(console.dir);
 
 app.listen(port, () => {
-  console.log(`Metal-House Server is Running on the port ${port}`);
+  console.log(`Metal-House Server is Lestning on the port ${port}`);
 });
