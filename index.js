@@ -16,7 +16,8 @@ app.get("/", (req, res) => {
   res.send("Welcome to Metal House");
 });
 
-// Database Connection
+// Database Connection.
+// 21st January - Resuming the Database Connection.
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.xlwxjjl.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
