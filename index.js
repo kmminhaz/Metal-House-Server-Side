@@ -25,6 +25,11 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
+// client.connect(err => {
+//   const collection = client.db("metalHouse").collection("tools");
+//   console.log('Mongodb is Connected');
+//   client.close();
+// });
 async function run() {
   try {
     // Connect the client to the server
@@ -33,6 +38,8 @@ async function run() {
     const orderCollection = client.db("metalHouse").collection("orders");
     const reviewCollection = client.db("metalHouse").collection("reviews");
     const profileCollection = client.db("metalHouse").collection("profiles");
+
+    console.log("Mongodb is Connected");
 
     app.get("/tools", async (req, res) => {
       const query = {};
@@ -235,11 +242,11 @@ async function run() {
   }
 }
 
-// run().catch(console.dir);
+run().catch(console.dir);
 
-// app.get('/', (req, res) => {
-//   res.send(`Metal-House Server is Lestning on the port ${port}`);
-// });
+app.get('/', (req, res) => {
+  res.send(`Metal-House Server is Lestning on the port ${port}`);
+});
 
 app.listen(port, () => {
   console.log(`Metal-House Server is Lestning on the port ${port}`);
