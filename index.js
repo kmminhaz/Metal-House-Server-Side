@@ -235,11 +235,11 @@ async function run() {
   }
 }
 
-run().catch(console.dir);
+// run().catch(console.dir);
 
-app.get('/', (req, res) => {
-  res.send(`Metal-House Server is Lestning on the port ${port}`);
-});
+// app.get('/', (req, res) => {
+//   res.send(`Metal-House Server is Lestning on the port ${port}`);
+// });
 
 app.listen(port, () => {
   console.log(`Metal-House Server is Lestning on the port ${port}`);
