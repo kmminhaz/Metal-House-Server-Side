@@ -33,7 +33,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server
-    await client.connect();
+    client.connect();
     const toolCollection = client.db("metalHouse").collection("tools");
     const orderCollection = client.db("metalHouse").collection("orders");
     const reviewCollection = client.db("metalHouse").collection("reviews");
@@ -244,9 +244,9 @@ async function run() {
 
 run().catch(console.dir);
 
-app.get('/', (req, res) => {
-  res.send(`Metal-House Server is Lestning on the port ${port}`);
-});
+// app.get('/', (req, res) => {
+//   res.send(`Metal-House Server is Lestning on the port ${port}`);
+// });
 
 app.listen(port, () => {
   console.log(`Metal-House Server is Lestning on the port ${port}`);
